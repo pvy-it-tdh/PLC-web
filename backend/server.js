@@ -3,8 +3,11 @@ const plc = new nodes7();
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const db = require('./src/config/db'); // Assuming db.js is in src/config
+
 
 const app = express();
+app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
 const conn = new nodes7();
@@ -37,6 +40,20 @@ function connectToPLC() {
   }
   );
 } 
+// Route cho auth
+const authRoutes = require('./src/routes/auth');
+app.use('/api/auth', authRoutes);
+
+app.get('/', (req, res) => {
+  db.query('SELECT 1 + 1 AS result', (err, results) => {
+    if (err) {
+      console.error('Database connection error:', err);
+      return res.status(500).send('DB error');
+    }
+    console.log('Database connected successfully:', results);
+    res.send('API is running');
+  });
+});
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
