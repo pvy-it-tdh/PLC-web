@@ -4,10 +4,11 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const db = require('./src/config/db');
-
+const plcRoutes = require('./src/routes/plc');
 const app = express();
+const authRoutes = require('./src/routes/auth');
 app.use(express.json());
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 // Khởi tạo kết nối PLC
 plc.initiateConnection({
@@ -33,16 +34,11 @@ plc.initiateConnection({
     }
   });
 });
-
-// Export plc instance cho controller dùng
 module.exports.plcInstance = plc;
 
-// Route cho auth
-const authRoutes = require('./src/routes/auth');
+
 app.use('/api/auth', authRoutes);
 
-// Route cho PLC
-const plcRoutes = require('./src/routes/plc');
 app.use('/api/plc', plcRoutes);
 
 app.get('/', (req, res) => {
